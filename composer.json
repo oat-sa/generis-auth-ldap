@@ -1,0 +1,28 @@
+{
+    "name" : "oat/generis-auth-ldap",
+    "description" : "Generis LDAP authentication",
+    "type" : "library",
+    "support": {
+        "forum": "http://forum.taotesting.com",
+        "issues": "http://forge.taotesting.com"
+    },
+    "keywords" : [
+        "tao",
+        "oat",
+        "computer-based-assessment"
+    ],
+    "autoload" : {
+        "psr-4" : {
+            "oat\\authKeyValue\\" : ""
+        }
+    },
+    "homepage" : "http://www.taotesting.com",
+    "license" : [
+        "GPL-2.0"
+    ],
+    "require" : {
+        "zendframework/zend-authentication":"2.*",
+        "zendframework/zend-ldap" : "2.*"
+    },
+    "minimum-stability" : "dev"
+}
