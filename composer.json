@@ -1,5 +1,5 @@
 {
-    "name" : "oat/generis-auth-ldap",
+    "name" : "oat-sa/generis-auth-ldap",
     "description" : "Generis LDAP authentication",
     "type" : "library",
     "version" : "0.1",
