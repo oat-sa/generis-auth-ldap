@@ -2,6 +2,7 @@
     "name" : "oat/generis-auth-ldap",
     "description" : "Generis LDAP authentication",
     "type" : "library",
+    "version" : "0.1",
     "support": {
         "forum": "http://forum.taotesting.com",
         "issues": "http://forge.taotesting.com"
