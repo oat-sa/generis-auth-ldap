@@ -84,18 +84,17 @@ class LdapAdapter implements LoginAdapter
         $adapter->setPassword($this->getPassword());
 
 
-        $identity = $adapter->authenticate();
-$params=array();
+        if($adapter->authenticate()){
 
+            $result = $adapter->getAccountObject();
+            $params = get_object_vars($result);
 
-        if($identity){
-            $user = new AuthKeyValueUser();
+            $user = new LdapUser();
+
             $user->setConfiguration($this->getConfiguration());
-            $user->setIdentifier($params['uri']);
-            $user->setRoles($params[PROPERTY_USER_ROLES]);
-            $user->setLanguageUi($params[PROPERTY_USER_UILG]);
-            $user->setLanguageDefLg($params[PROPERTY_USER_DEFLG]);
-            $user->setUserRawParameters($params);
+            $user->setRoles(array('http://www.tao.lu/Ontologies/TAO.rdf#DeliveryRole'));
+            $user->setLanguageUi($params['preferredlanguage']);
+            $user->setLanguageDefLg($params['preferredlanguage']);
 
             return $user;
 
