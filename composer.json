@@ -14,7 +14,7 @@
     ],
     "autoload" : {
         "psr-4" : {
-            "oat\\authKeyValue\\" : ""
+            "oat\\authLdap\\" : ""
         }
     },
     "homepage" : "http://www.taotesting.com",
