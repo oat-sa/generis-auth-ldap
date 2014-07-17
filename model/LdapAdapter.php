@@ -77,14 +77,21 @@ class LdapAdapter implements LoginAdapter
     public function authenticate() {
         $adapter = new Ldap();
         $adapter->setOptions(
-            array($this->getConfiguration())
+            array(array(
+                'host' => '127.0.0.1',
+                'accountDomainName' => 'test.com',
+                'username' => 'cn=admin,dc=test,dc=com',
+                'password' => 'admin',
+                'baseDn' => 'OU=organisation,dc=test,dc=com',
+                'bindRequiresDn' => 'true',
+            ))
         );
 
         $adapter->setUsername($this->getUsername());
         $adapter->setPassword($this->getPassword());
+        $result = $adapter->authenticate();
 
-
-        if($adapter->authenticate()){
+        if($result->isValid()){
 
             $result = $adapter->getAccountObject();
             $params = get_object_vars($result);
@@ -92,9 +99,7 @@ class LdapAdapter implements LoginAdapter
             $user = new LdapUser();
 
             $user->setConfiguration($this->getConfiguration());
-            $user->setRoles(array('http://www.tao.lu/Ontologies/TAO.rdf#DeliveryRole'));
-            $user->setLanguageUi($params['preferredlanguage']);
-            $user->setLanguageDefLg($params['preferredlanguage']);
+            $user->setUserRawParameters($params);
 
             return $user;
 

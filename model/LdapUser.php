@@ -96,12 +96,7 @@ class LdapUser extends common_user_User {
      */
     public function setLanguageDefLg($languageDefLgUri)
     {
-        $languageResource = new core_kernel_classes_Resource($languageDefLgUri);
-
-        $languageCode = $languageResource->getUniquePropertyValue(new core_kernel_classes_Property(RDF_VALUE));
-        if($languageCode) {
-            $this->languageDefLg = array((string)$languageCode);
-        }
+        $this->languageDefLg = array((string)$languageDefLgUri);
 
         return $this;
     }
@@ -132,15 +127,34 @@ class LdapUser extends common_user_User {
         return $this->userExtraParameters;
     }
 
+    /**
+     * @param $property string
+     * @param $value string
+     */
+    public function setUserParameter($property, $value){
+        $this->userRawParameters[$property] = $value;
+    }
 
+
+    public function getUserParameter($property) {
+        if (isset ($this->userRawParameters[$property] ) )
+            return $this->userRawParameters[$property];
+
+        return null;
+    }
 
     /**
-     * @param rray $userRawParameters
+     * @param array $params
      * @return AuthKeyValueUser
      */
-    public function setUserRawParameters(array $userRawParameters)
+    public function setUserRawParameters(array $params)
     {
-        $this->userRawParameters = $userRawParameters;
+        $this->setRoles(array('http://www.tao.lu/Ontologies/TAO.rdf#DeliveryRole'));
+
+        isset($params['preferredlanguage']) ? $this->setLanguageUi($params['preferredlanguage']) : DEFAULT_LANG;
+        isset($params['preferredlanguage']) ? $this->setLanguageDefLg($params['preferredlanguage']) : DEFAULT_LANG;
+        isset($params['mail']) ? $this->setUserParameter(PROPERTY_USER_MAIL, $params['mail']) : '';
+        isset($params['displayname']) ? $this->setUserParameter(PROPERTY_USER_LASTNAME, $params['displayname']) : $this->setUserParameter(PROPERTY_USER_LASTNAME, $params['cn']) ;
 
         return $this;
     }
@@ -159,12 +173,7 @@ class LdapUser extends common_user_User {
      */
     public function setLanguageUi($languageUri)
     {
-        $languageResource = new core_kernel_classes_Resource($languageUri);
-
-        $languageCode = $languageResource->getUniquePropertyValue(new core_kernel_classes_Property(RDF_VALUE));
-        if($languageCode) {
-            $this->languageUi = array((string)$languageCode);
-        }
+        $this->languageUi = array((string)$languageUri);
 
         return $this;
     }
@@ -204,52 +213,18 @@ class LdapUser extends common_user_User {
     {
         $returnValue = null;
 
-        $userParameters = $this->getUserRawParameters();
-
-        if( !empty($userParameters) && array_key_exists($property, $userParameters))
-        {
-            switch ($property) {
-                case PROPERTY_USER_DEFLG :
-                    $returnValue = $this->getLanguageDefLg();
-                    break;
-                case PROPERTY_USER_UILG :
-                    $returnValue = $this->getLanguageUi();
-                    break;
-                case PROPERTY_USER_ROLES :
-                    $returnValue = $this->getRoles();
-                    break;
-                default:
-                    $returnValue = array($userParameters[$property]);
-            }
-        } else {
-            $extraParameters = $this->getUserExtraParameters();
-            // the element has already been accessed
-            if(!empty($extraParameters) && array_key_exists($property, $extraParameters)){
-                if(!is_array($extraParameters[$property])){
-                    $returnValue = array($extraParameters[$property]);
-                } else {
-                    $returnValue = $extraParameters[$property];
-                }
-
-            } else {
-                // not already accessed, we are going to get it.
-                $serviceUser = new AuthKeyValueUserService();
-                $parameter = $serviceUser->getUserParameter($userParameters[PROPERTY_USER_LOGIN], $property);
-
-                $config = $this->getConfiguration();
-                if(isset($config['max_size_cached_element'])){
-                    if( strlen(base64_encode(serialize($parameter))) < $config['max_size_cached_element'] ) {
-                        $extraParameters[$property] = $parameter;
-                        $this->setUserExtraParameters($extraParameters);
-                    }
-                } else {
-                    throw new Exception('Missing configuration element max_sized_cached_element');
-                }
-
-
-                $returnValue = array($parameter);
-            }
-
+        switch ($property) {
+            case PROPERTY_USER_DEFLG :
+                $returnValue = $this->getLanguageDefLg();
+                break;
+            case PROPERTY_USER_UILG :
+                $returnValue = $this->getLanguageUi();
+                break;
+            case PROPERTY_USER_ROLES :
+                $returnValue = $this->getRoles();
+                break;
+            default:
+                $returnValue = array($this->getUserParameter($property));
         }
 
         return $returnValue;
