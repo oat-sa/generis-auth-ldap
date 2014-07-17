@@ -34,6 +34,7 @@ use core_kernel_users_InvalidLoginException;
 use oat\authKeyValue\model\AuthKeyValueUser;
 use oat\oatbox\user\auth\LoginAdapter;
 use Zend\Authentication\Adapter\Ldap;
+use common_persistence_Manager;
 
 /**
  * Adapter to authenticate users stored in the Ldap implementation
@@ -45,7 +46,7 @@ class LdapAdapter implements LoginAdapter
 {
 
     /** Key used to retrieve the persistence information */
-    CONST KEY_VALUE_PERSISTENCE_ID = 'authLdap';
+    CONST LDAP_PERSISTENCE_ID = 'authLdap';
 
     /** @var  $username string */
     private $username;
@@ -57,10 +58,19 @@ class LdapAdapter implements LoginAdapter
     protected $configuration;
 
     /**
+     * @var \Zend\Authentication\Adapter\Ldap
+     */
+    protected $adapter;
+
+    /**
      * @param array $configuration
      */
     public function __construct(array $configuration) {
         $this->configuration = $configuration;
+
+        $this->adapter = new Ldap();
+        $this->adapter->setOptions($configuration['config']);
+
     }
 
     /**
@@ -75,17 +85,9 @@ class LdapAdapter implements LoginAdapter
     }
 
     public function authenticate() {
-        $adapter = new Ldap();
-        $adapter->setOptions(
-            array(array(
-                'host' => '127.0.0.1',
-                'accountDomainName' => 'test.com',
-                'username' => 'cn=admin,dc=test,dc=com',
-                'password' => 'admin',
-                'baseDn' => 'OU=organisation,dc=test,dc=com',
-                'bindRequiresDn' => 'true',
-            ))
-        );
+
+
+        $adapter = $this->getAdapter();
 
         $adapter->setUsername($this->getUsername());
         $adapter->setPassword($this->getPassword());
@@ -109,6 +111,23 @@ class LdapAdapter implements LoginAdapter
 
 
     }
+
+    /**
+     * @param \Zend\Authentication\Adapter\Ldap $adapter
+     */
+    public function setAdapter($adapter)
+    {
+        $this->adapter = $adapter;
+    }
+
+    /**
+     * @return \Zend\Authentication\Adapter\Ldap
+     */
+    public function getAdapter()
+    {
+        return $this->adapter;
+    }
+
 
     /**
      * @param array $configuration
