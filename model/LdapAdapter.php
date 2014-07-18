@@ -62,7 +62,7 @@ class LdapAdapter implements LoginAdapter
      * Create an adapter from the configuration
      * 
      * @param array $configuration
-     * @return \oat\authKeyValue\model\AuthKeyValueAdapter
+     * @return oat\authLdap\model\LdapAdapter
      */
     public static function createFromConfig(array $configuration) {
         return new self($configuration);
