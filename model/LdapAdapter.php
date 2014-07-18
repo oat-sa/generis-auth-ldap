@@ -44,10 +44,6 @@ use common_persistence_Manager;
  */
 class LdapAdapter implements LoginAdapter
 {
-
-    /** Key used to retrieve the persistence information */
-    CONST LDAP_PERSISTENCE_ID = 'authLdap';
-
     /** @var  $username string */
     private $username;
 
@@ -176,8 +172,6 @@ class LdapAdapter implements LoginAdapter
     {
         return $this->username;
     }
-
-
 
 
 }

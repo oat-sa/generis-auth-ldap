@@ -72,22 +72,6 @@ class LdapUser extends common_user_User {
      */
     protected $languageDefLg = array(DEFAULT_LANG);
 
-    /**
-     * @param array $configuration
-     */
-    public function setConfiguration($configuration)
-    {
-        $this->configuration = $configuration;
-    }
-
-    /**
-     * @return array
-     */
-    public function getConfiguration()
-    {
-        return $this->configuration;
-    }
-
 
     /**
      * Sets the language URI
@@ -109,22 +93,6 @@ class LdapUser extends common_user_User {
     public function getLanguageDefLg()
     {
         return $this->languageDefLg;
-    }
-
-    /**
-     * @param array $userExtraParameters
-     */
-    public function setUserExtraParameters(array $userExtraParameters)
-    {
-        $this->userExtraParameters = $userExtraParameters;
-    }
-
-    /**
-     * @return array
-     */
-    public function getUserExtraParameters()
-    {
-        return $this->userExtraParameters;
     }
 
     /**
