@@ -61,6 +61,16 @@ class LdapAdapter implements LoginAdapter
      * @var \Zend\Authentication\Adapter\Ldap
      */
     protected $adapter;
+    
+    /**
+     * Create an adapter from the configuration
+     * 
+     * @param array $configuration
+     * @return oat\authLdap\model\LdapAdapter
+     */
+    public static function createFromConfig(array $configuration) {
+        return new self($configuration);
+    }
 
     /**
      * @param array $configuration
