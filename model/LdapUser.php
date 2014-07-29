@@ -74,6 +74,27 @@ class LdapUser extends common_user_User {
 
 
     /**
+     * The mapping of custom parameter from ldap to TAO property
+     *
+     * @var array
+     */
+    protected $mapping;
+
+
+    public function __construct(array $mapping = null){
+        $this->mapping = $mapping;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getMapping()
+    {
+        return $this->mapping;
+    }
+
+    /**
      * Sets the language URI
      *
      * @param string $languageDefLgUri
@@ -119,10 +140,25 @@ class LdapUser extends common_user_User {
     {
         $this->setRoles(array('http://www.tao.lu/Ontologies/TAO.rdf#DeliveryRole'));
 
+        // initialize parameter that should be set
         isset($params['preferredlanguage']) ? $this->setLanguageUi($params['preferredlanguage']) : DEFAULT_LANG;
         isset($params['preferredlanguage']) ? $this->setLanguageDefLg($params['preferredlanguage']) : DEFAULT_LANG;
         isset($params['mail']) ? $this->setUserParameter(PROPERTY_USER_MAIL, $params['mail']) : '';
         isset($params['displayname']) ? $this->setUserParameter(PROPERTY_USER_LASTNAME, $params['displayname']) : $this->setUserParameter(PROPERTY_USER_LASTNAME, $params['cn']) ;
+
+
+        $mapping = $this->getMapping();
+        foreach($params as $key => $value) {
+
+            if(! in_array($key, array('preferredlanguage','mail', 'displayname'))) {
+
+                if(array_key_exists($key, $mapping)){
+                    $this->setUserParameter($mapping[$key], $value);
+                }
+            }
+
+        }
+
 
         return $this;
     }

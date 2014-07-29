@@ -23,7 +23,7 @@
  * Authentication adapter interface to be implemented by authentication methodes
  *
  * @author christophe massin
- * @package authKeyValue
+ * @package authLdap
 
  */
 
@@ -31,7 +31,8 @@ namespace oat\authLdap\model;
 
 use core_kernel_users_Service;
 use core_kernel_users_InvalidLoginException;
-use oat\authKeyValue\model\AuthKeyValueUser;
+use oat\authLdap\model\LdapUser;
+use oat\generisHard\models\hardsql\Exception;
 use oat\oatbox\user\auth\LoginAdapter;
 use Zend\Authentication\Adapter\Ldap;
 use common_persistence_Manager;
@@ -53,6 +54,9 @@ class LdapAdapter implements LoginAdapter
     /** @var $configuration array $configuration  */
     protected $configuration;
 
+    /** @var $mapping array $mapping  */
+    protected $mapping;
+
     /**
      * @var \Zend\Authentication\Adapter\Ldap
      */
@@ -66,6 +70,7 @@ class LdapAdapter implements LoginAdapter
 
         $this->adapter = new Ldap();
         $this->adapter->setOptions($configuration['config']);
+        $this->setMapping($configuration['mapping']);
 
     }
 
@@ -94,11 +99,9 @@ class LdapAdapter implements LoginAdapter
             $result = $adapter->getAccountObject();
             $params = get_object_vars($result);
 
-            $user = new LdapUser();
+            $user = new LdapUser($this->getMapping());
 
-            $user->setConfiguration($this->getConfiguration());
             $user->setUserRawParameters($params);
-
             return $user;
 
         } else {
@@ -140,6 +143,24 @@ class LdapAdapter implements LoginAdapter
     {
         return $this->configuration;
     }
+
+    /**
+     * @param array $mapping
+     */
+    public function setMapping($mapping)
+    {
+        $this->mapping = $mapping;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMapping()
+    {
+        return $this->mapping;
+    }
+
+
 
     /**
      * @param string $password
