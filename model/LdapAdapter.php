@@ -33,7 +33,6 @@ use core_kernel_users_Service;
 use core_kernel_users_InvalidLoginException;
 use oat\authLdap\model\LdapUser;
 use oat\generisHard\models\hardsql\Exception;
-use oat\oatbox\user\auth\LoginAdapter;
 use Zend\Authentication\Adapter\Ldap;
 use common_persistence_Manager;
 
@@ -43,7 +42,7 @@ use common_persistence_Manager;
  * @author Christophe Massin <christope@taotesting.com>
  *
  */
-class LdapAdapter implements LoginAdapter
+class LdapAdapter
 {
     /** @var  $username string */
     private $username;
