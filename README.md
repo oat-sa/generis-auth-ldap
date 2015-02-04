@@ -1,7 +1,7 @@
 generis-auth-ldap
 =================
 
-An LDAP implementation of the Tao user authentication
+An LDAP implementation of the Tao 3.0 user authentication
 
 Requirement
 =====================
@@ -34,7 +34,7 @@ Once it's done, run a composer update.
 
 ------------------------------
 
-To enable them, you need to go to generis/common/conf/auth.conf.php and add these lines 
+To enable them, you need to go to /config/generis/auth.conf.php and add these lines 
 
     array(
         'driver' => 'oat\authLdap\model\LdapAdapter',
