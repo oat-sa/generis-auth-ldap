@@ -115,7 +115,7 @@ class LdapAdapter implements LoginAdapter
             return $user;
 
         } else {
-            throw new core_kernel_users_InvalidLoginException();
+            throw new core_kernel_users_InvalidLoginException('User "'.$this->getUsername().'" failed LDAP authentication.');
         }
 
 
