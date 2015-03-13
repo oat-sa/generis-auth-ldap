@@ -45,6 +45,10 @@ use common_persistence_Manager;
  */
 class LdapAdapter implements LoginAdapter
 {
+    const OPTION_ADAPTER_CONFIG = 'config';
+    
+    const OPTION_USER_MAPPING = 'mapping';
+    
     /** @var  $username string */
     private $username;
 
@@ -80,8 +84,12 @@ class LdapAdapter implements LoginAdapter
 
         $this->adapter = new Ldap();
         $this->adapter->setOptions($configuration['config']);
-        $this->setMapping($configuration['mapping']);
+        $this->setMapping(isset($configuration['mapping']) ? $configuration['mapping'] : array());
 
+    }
+    
+    public function getOption($name) {
+        return $this->configuration[$name];
     }
 
     /**
@@ -108,10 +116,10 @@ class LdapAdapter implements LoginAdapter
 
             $result = $adapter->getAccountObject();
             $params = get_object_vars($result);
+            
+            $factory = new LdapUserFactory($this->getOption(self::OPTION_USER_MAPPING));
+            $user = $factory->createUser($params);
 
-            $user = new LdapUser($this->getMapping());
-
-            $user->setUserRawParameters($params);
             return $user;
 
         } else {
