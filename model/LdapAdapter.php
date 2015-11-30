@@ -63,25 +63,22 @@ class LdapAdapter implements LoginAdapter
     protected $adapter;
     
     /**
-     * Create an adapter from the configuration
-     * 
-     * @param array $configuration
-     * @return oat\authLdap\model\LdapAdapter
+     * Instantiates Zend Ldap adapter
      */
-    public static function createFromConfig(array $configuration) {
-        return new self($configuration);
-    }
-
-    /**
-     * @param array $configuration
-     */
-    public function __construct(array $configuration) {
-        $this->configuration = $configuration;
-
+    public function __construct() {
         $this->adapter = new Ldap();
-        $this->adapter->setOptions($configuration['config']);
-        $this->setMapping($configuration['mapping']);
-
+    }
+    
+    /**
+     * (non-PHPdoc)
+     * @see \oat\oatbox\user\auth\LoginAdapter::setOptions()
+     */
+    public function setOptions(array $options) {
+        $this->configuration = $options;
+        $this->adapter->setOptions($options['config']);
+        if (isset($options['mapping'])) {
+            $this->setMapping($options['mapping']);
+        }
     }
 
     /**
