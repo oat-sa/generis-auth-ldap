@@ -58,9 +58,6 @@ class LdapAdapter implements LoginAdapter
     /** @var $configuration array $configuration  */
     protected $configuration;
 
-    /** @var $mapping array $mapping  */
-    protected $mapping;
-
     /**
      * @var \Zend\Authentication\Adapter\Ldap
      */
@@ -73,7 +70,16 @@ class LdapAdapter implements LoginAdapter
      * @return oat\authLdap\model\LdapAdapter
      */
     public static function createFromConfig(array $configuration) {
-        return new self($configuration);
+        $adapter = new self();
+        $adapter->setOptions($configuration);
+        return $adapter;
+    }
+
+    /**
+     * Instantiates Zend Ldap adapter
+     */
+    public function __construct() {
+        $this->adapter = new Ldap();
     }
 
     /**
@@ -84,8 +90,12 @@ class LdapAdapter implements LoginAdapter
 
         $this->adapter = new Ldap();
         $this->adapter->setOptions($configuration['config']);
-        $this->setMapping(isset($configuration['mapping']) ? $configuration['mapping'] : array());
 
+    }
+
+    public function setOptions(array $options) {
+        $this->configuration = $options;
+        $this->adapter->setOptions($options['config']);
     }
     
     public function getOption($name) {
@@ -161,24 +171,6 @@ class LdapAdapter implements LoginAdapter
     {
         return $this->configuration;
     }
-
-    /**
-     * @param array $mapping
-     */
-    public function setMapping($mapping)
-    {
-        $this->mapping = $mapping;
-    }
-
-    /**
-     * @return array
-     */
-    public function getMapping()
-    {
-        return $this->mapping;
-    }
-
-
 
     /**
      * @param string $password
