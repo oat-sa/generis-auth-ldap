@@ -82,17 +82,6 @@ class LdapAdapter implements LoginAdapter
         $this->adapter = new Ldap();
     }
 
-    /**
-     * @param array $configuration
-     */
-    public function __construct(array $configuration) {
-        $this->configuration = $configuration;
-
-        $this->adapter = new Ldap();
-        $this->adapter->setOptions($configuration['config']);
-
-    }
-
     public function setOptions(array $options) {
         $this->configuration = $options;
         $this->adapter->setOptions($options['config']);
@@ -101,7 +90,11 @@ class LdapAdapter implements LoginAdapter
     public function getOption($name) {
         return $this->configuration[$name];
     }
-
+    
+    public function hasOption($name) {
+        return isset($this->configuration[$name]);
+    }
+    
     /**
      * Set the credential
      *
@@ -127,7 +120,10 @@ class LdapAdapter implements LoginAdapter
             $result = $adapter->getAccountObject();
             $params = get_object_vars($result);
             
-            $factory = new LdapUserFactory($this->getOption(self::OPTION_USER_MAPPING));
+            $mapping = $this->hasOption(self::OPTION_USER_MAPPING)
+                ? $this->getOption(self::OPTION_USER_MAPPING)
+                : array();
+            $factory = new LdapUserFactory($mapping);
             $user = $factory->createUser($params);
 
             return $user;
