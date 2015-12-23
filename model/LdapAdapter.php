@@ -45,6 +45,10 @@ use common_persistence_Manager;
  */
 class LdapAdapter implements LoginAdapter
 {
+    const OPTION_ADAPTER_CONFIG = 'config';
+    
+    const OPTION_USER_MAPPING = 'mapping';
+    
     /** @var  $username string */
     private $username;
 
@@ -54,33 +58,43 @@ class LdapAdapter implements LoginAdapter
     /** @var $configuration array $configuration  */
     protected $configuration;
 
-    /** @var $mapping array $mapping  */
-    protected $mapping;
-
     /**
      * @var \Zend\Authentication\Adapter\Ldap
      */
     protected $adapter;
     
     /**
+     * Create an adapter from the configuration
+     * 
+     * @param array $configuration
+     * @return oat\authLdap\model\LdapAdapter
+     */
+    public static function createFromConfig(array $configuration) {
+        $adapter = new self();
+        $adapter->setOptions($configuration);
+        return $adapter;
+    }
+
+    /**
      * Instantiates Zend Ldap adapter
      */
     public function __construct() {
         $this->adapter = new Ldap();
     }
-    
-    /**
-     * (non-PHPdoc)
-     * @see \oat\oatbox\user\auth\LoginAdapter::setOptions()
-     */
+
     public function setOptions(array $options) {
         $this->configuration = $options;
         $this->adapter->setOptions($options['config']);
-        if (isset($options['mapping'])) {
-            $this->setMapping($options['mapping']);
-        }
     }
-
+    
+    public function getOption($name) {
+        return $this->configuration[$name];
+    }
+    
+    public function hasOption($name) {
+        return isset($this->configuration[$name]);
+    }
+    
     /**
      * Set the credential
      *
@@ -105,10 +119,13 @@ class LdapAdapter implements LoginAdapter
 
             $result = $adapter->getAccountObject();
             $params = get_object_vars($result);
+            
+            $mapping = $this->hasOption(self::OPTION_USER_MAPPING)
+                ? $this->getOption(self::OPTION_USER_MAPPING)
+                : array();
+            $factory = new LdapUserFactory($mapping);
+            $user = $factory->createUser($params);
 
-            $user = new LdapUser($this->getMapping());
-
-            $user->setUserRawParameters($params);
             return $user;
 
         } else {
@@ -150,24 +167,6 @@ class LdapAdapter implements LoginAdapter
     {
         return $this->configuration;
     }
-
-    /**
-     * @param array $mapping
-     */
-    public function setMapping($mapping)
-    {
-        $this->mapping = $mapping;
-    }
-
-    /**
-     * @return array
-     */
-    public function getMapping()
-    {
-        return $this->mapping;
-    }
-
-
 
     /**
      * @param string $password
