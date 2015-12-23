@@ -106,7 +106,7 @@ Alternatively if you want to take over a value of an LDAP attribute you would ad
         );
     ),
     
-This would use the value of the LDAP attribute 'username' as label for the user.
+This would use the value of the LDAP attribute 'username' as label (RDFS_LABEL) for the user, overriding the default rule to use 'displayName'.
 
 ------------------------------
 
