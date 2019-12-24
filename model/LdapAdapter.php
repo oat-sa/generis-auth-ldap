@@ -2,7 +2,7 @@
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; under version 2
+y * as published by the Free Software Foundation; under version 2
  * of the License (non-upgradable).
  *
  * This program is distributed in the hope that it will be useful,
@@ -34,6 +34,7 @@ use core_kernel_users_InvalidLoginException;
 use oat\authLdap\model\LdapUser;
 use oat\generisHard\models\hardsql\Exception;
 use oat\oatbox\user\auth\LoginAdapter;
+
 use Zend\Authentication\Adapter\Ldap;
 use common_persistence_Manager;
 
@@ -45,6 +46,10 @@ use common_persistence_Manager;
  */
 class LdapAdapter implements LoginAdapter
 {
+    const OPTION_ADAPTER_CONFIG = 'config';
+
+    const OPTION_USER_MAPPING = 'mapping';
+
     /** @var  $username string */
     private $username;
 
@@ -54,34 +59,41 @@ class LdapAdapter implements LoginAdapter
     /** @var $configuration array $configuration  */
     protected $configuration;
 
-    /** @var $mapping array $mapping  */
-    protected $mapping;
-
     /**
      * @var \Zend\Authentication\Adapter\Ldap
      */
     protected $adapter;
-    
+
     /**
      * Create an adapter from the configuration
-     * 
+     *
      * @param array $configuration
      * @return oat\authLdap\model\LdapAdapter
      */
     public static function createFromConfig(array $configuration) {
-        return new self($configuration);
+        $adapter = new self();
+        $adapter->setOptions($configuration);
+        return $adapter;
     }
 
     /**
-     * @param array $configuration
+     * Instantiates Zend Ldap adapter
      */
-    public function __construct(array $configuration) {
-        $this->configuration = $configuration;
-
+    public function __construct() {
         $this->adapter = new Ldap();
-        $this->adapter->setOptions($configuration['config']);
-        $this->setMapping($configuration['mapping']);
+    }
 
+    public function setOptions(array $options) {
+        $this->configuration = $options;
+        $this->adapter->setOptions($options['config']);
+    }
+
+    public function getOption($name) {
+        return $this->configuration[$name];
+    }
+
+    public function hasOption($name) {
+        return isset($this->configuration[$name]);
     }
 
     /**
@@ -109,13 +121,17 @@ class LdapAdapter implements LoginAdapter
             $result = $adapter->getAccountObject();
             $params = get_object_vars($result);
 
-            $user = new LdapUser($this->getMapping());
 
-            $user->setUserRawParameters($params);
+            $mapping = $this->hasOption(self::OPTION_USER_MAPPING)
+                ? $this->getOption(self::OPTION_USER_MAPPING)
+                : array();
+            $factory = new LdapUserFactory($mapping);
+            $user = $factory->createUser($params);
+
             return $user;
 
         } else {
-            throw new core_kernel_users_InvalidLoginException();
+            throw new core_kernel_users_InvalidLoginException('User "'.$this->getUsername().'" failed LDAP authentication.');
         }
 
 
@@ -153,24 +169,6 @@ class LdapAdapter implements LoginAdapter
     {
         return $this->configuration;
     }
-
-    /**
-     * @param array $mapping
-     */
-    public function setMapping($mapping)
-    {
-        $this->mapping = $mapping;
-    }
-
-    /**
-     * @return array
-     */
-    public function getMapping()
-    {
-        return $this->mapping;
-    }
-
-
 
     /**
      * @param string $password
