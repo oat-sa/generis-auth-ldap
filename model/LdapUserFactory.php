@@ -35,7 +35,6 @@ use oat\taoTestTaker\models\CrudService;
 use oat\generis\model\user\UserRdf;
 
 
-
 class LdapUserFactory extends Configurable {
 
     public function createUser($rawData) {
@@ -59,16 +58,19 @@ class LdapUserFactory extends Configurable {
         $taouser = null;
 
         // check if login already exists - Create if not, and add the delivery role!
-        $userService = \core_kernel_users_Service::singleton();
+        // $userService = ServiceManager::getServiceManager()->get("tao/UserService");
+        // $userService = \tao_models_classes_UserService::singleton();
+        // $userService = \core_kernel_users_Service::singleton();
+        // $userService = tao_models_classes_UserService::singleton();
 
-        if (! $userService->loginExists($userdata[PROPERTY_USER_LOGIN])) {
-           $crudservice = new CrudService;
+        if (! \core_kernel_users_Service::loginExists($userdata[PROPERTY_USER_LOGIN])) {
+           $crudservice = CrudService::singleton();
            $taouser = $crudservice->CreateFromArray( $userdata );
 
         } else {
 
            // Retrieve the specified user.
-           $taouser = $userService->getOneUser( $userdata[PROPERTY_USER_LOGIN] );
+           $taouser = \core_kernel_users_Service::getOneUser( $userdata[PROPERTY_USER_LOGIN] );
         }
 
         return new LdapUser($taouser->getUri(), $data);
