@@ -58,10 +58,6 @@ class LdapUserFactory extends Configurable {
         $taouser = null;
 
         // check if login already exists - Create if not, and add the delivery role!
-        // $userService = ServiceManager::getServiceManager()->get("tao/UserService");
-        // $userService = \tao_models_classes_UserService::singleton();
-        // $userService = \core_kernel_users_Service::singleton();
-        // $userService = tao_models_classes_UserService::singleton();
 
         if (! \core_kernel_users_Service::loginExists($userdata[PROPERTY_USER_LOGIN])) {
            $crudservice = CrudService::singleton();
