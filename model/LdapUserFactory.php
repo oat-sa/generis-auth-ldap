@@ -124,7 +124,7 @@ class LdapUserFactory extends Configurable {
             ,PROPERTY_USER_FIRSTNAME    => self::attributeValue('givenname')
             ,PROPERTY_USER_LASTNAME     => self::attributeValue('sn')
             ,PROPERTY_USER_LOGIN        => self::attributeValue('dn')
-            ,PROPERTY_USER_PASSWORD     => self::rawValue(CrudService::INVALID_PASSWORD)
+            ,PROPERTY_USER_PASSWORD     => self::rawValue('KLakjs892(*(761234987(*&')
             ,RDFS_LABEL                 => self::attributeValue('mail')
         );
     }
